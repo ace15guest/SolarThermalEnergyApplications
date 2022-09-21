@@ -55,6 +55,7 @@ class ClearDayGui:
         self.day_angle = (self.day_var.get()-173)*0.017453
         self.declination_angle = math.asin(.39795*math.cos(self.day_angle))*57.2957
         self.phi = self.latitude_var.get()/87.2957
+        self.A0 = .4237-.00821*(6-self.altitude_var.get())**2
 
 
 
