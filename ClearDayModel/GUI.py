@@ -104,8 +104,8 @@ class ClearDayGui:
 
     def update_plot(self):
         try:
-
-            self.plot1.plot(self.gmt, self.cd_factor, 'o')
+            self.plot1.clear()
+            self.plot1.scatter(list(self.gmt), list(self.cd_factor))
             self.canvas.draw()
         except AttributeError:
             pass
