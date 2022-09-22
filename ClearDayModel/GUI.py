@@ -10,7 +10,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 class ClearDayGui:
     def __init__(self, root=tk.Tk()):
         self.root = root
-        self.root.geometry('1050x750')
+        self.root.geometry('1250x750')
         self.root.resizable(False, False)
         self.slide_bars_place()
 
@@ -51,7 +51,8 @@ class ClearDayGui:
         alt_entry.place(x=x_pos + label_spacing + 90, y=30, )
 
         altitude_slide = ttk.Scale(self.root, from_=0.001, to=.5, variable=self.altitude_var,
-                                   command=lambda x: self.slider_change(slider_var=self.altitude_var, slider_label=alt_label))
+                                   command=lambda x: self.slider_change(slider_var=self.altitude_var,
+                                                                        slider_label=alt_label))
         altitude_slide.place(x=x_pos, y=30)
 
         self.latitude_var = DoubleVar()
@@ -73,12 +74,11 @@ class ClearDayGui:
         longi_entry = Entry(self.root, textvariable=self.longiitude_var, width=10)
         longi_entry.place(x=x_pos + label_spacing + 100, y=73, )
 
-        longiitude_slide = ttk.Scale(self.root, from_=-90, to=90, variable=self.longiitude_var,
-                                   command=lambda x: self.slider_change(slider_var=self.longiitude_var,
-                                                                        slider_label=longi_label))
+        longiitude_slide = ttk.Scale(self.root, from_=-180, to=180, variable=self.longiitude_var,
+                                     command=lambda x: self.slider_change(slider_var=self.longiitude_var,
+                                                                          slider_label=longi_label))
         longiitude_slide.place(x=x_pos, y=70)
-        
-        
+
         self.root.bind("<Return>", lambda x: self.slider_change(slider_var=self.latitude_var, slider_label=lat_label))
 
     def plot_place(self):
@@ -98,7 +98,7 @@ class ClearDayGui:
         toolbar.place(x=590, y=710)
 
         # placing the toolbar on the Tkinter window
-        self.canvas.get_tk_widget().place(x=300, y=10)
+        self.canvas.get_tk_widget().place(x=400, y=10)
 
     def caculation_static_labels(self):
         inso_label = Label(self.root, text="Bean Normal Insolation:")
@@ -108,7 +108,7 @@ class ClearDayGui:
 
     def calculation_labels(self):
         try:
-            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370) +" W-h/m^2")
+            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370) + " W-h/m^2")
         except:
             pass
 
@@ -118,8 +118,7 @@ class ClearDayGui:
         self.varying_params()
         self.update_plot()
         self.calculation_labels()
-
-
+        self.local_to_gmt()
     def solar_time_func(self):
         self.begin_time_var = IntVar()
         start = Label(self.root, text="Start (EST)")
@@ -144,9 +143,6 @@ class ClearDayGui:
         end.place(x=150, y=230)
         finish = Entry(self.root, textvariable=self.end_time_gmt_var)
         finish.place(x=150, y=250)
-
-
-
 
     def varying_params(self):
         try:
@@ -190,13 +186,20 @@ class ClearDayGui:
         except AttributeError:
             pass
 
-
     def local_to_gmt(self):
-        self.mu = 0
+        self.mu = self.longiitude_var.get()
+        local = 12+self.begin_time_gmt_var.get() + self.mu / 15
+        local_hr = math.floor(local)
+        local_min = round((local % 1) * 60, 2)
+        self.begin_time_var.set(str(local_hr) + ':' + str(int(local_min)))
 
-        local = self.begin_time_gmt_var + self.mu/15
+        self.mu = self.longiitude_var.get()
+        local = 12+self.end_time_gmt_var.get() + self.mu / 15
+        local_hr = math.floor(local)
+        local_min = round((local % 1) * 60, 2)
+        self.end_time_var.set(str(local_hr) + ':' + str(int(local_min)))
+
         pass
-
 
 
 ClearDayGui()
