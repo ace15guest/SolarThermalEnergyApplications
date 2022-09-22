@@ -18,6 +18,7 @@ class ClearDayGui:
         self.Inso_b_n = 0
         self.plot_place()
         self.caculation_static_labels()
+        self.solar_time()
 
         self.root.mainloop()
 
@@ -45,23 +46,26 @@ class ClearDayGui:
         self.altitude_var.set(0.1)
         alt = Label(self.root, text="Altitude(Km): ").place(x=x_pos + label_spacing, y=30)
         alt_label = Label(self.root, text=str(self.altitude_var.get()))
-        alt_label.place(x=x_pos + label_spacing + 90, y=30)
+        # alt_label.place(x=x_pos + label_spacing + 90, y=30)
+        alt_entry = Entry(self.root, textvariable=self.altitude_var, width=10)
+        alt_entry.place(x=x_pos + label_spacing + 90, y=30, )
 
         altitude_slide = ttk.Scale(self.root, from_=0.001, to=.5, variable=self.altitude_var,
-                                   command=lambda x: self.slider_change(slider_var=self.altitude_var,
-                                                                        slider_label=alt_label))
+                                   command=lambda x: self.slider_change(slider_var=self.altitude_var, slider_label=alt_label))
         altitude_slide.place(x=x_pos, y=30)
 
         self.latitude_var = DoubleVar()
         lat = Label(self.root, text="Latitude (deg): ").place(x=x_pos + label_spacing, y=50)
-        lat_label = Label(self.root, text=str(self.altitude_var.get()))
-        lat_label.place(x=x_pos + label_spacing + 100, y=50)
+        lat_label = Label(self.root, text=str("{:.2f}".format(self.altitude_var.get())))
+        # lat_label.place(x=x_pos + label_spacing + 100, y=50)
+        lat_entry = Entry(self.root, textvariable=self.latitude_var, width=10)
+        lat_entry.place(x=x_pos + label_spacing + 100, y=53, )
 
         latitude_slide = ttk.Scale(self.root, from_=-90, to=90, variable=self.latitude_var,
                                    command=lambda x: self.slider_change(slider_var=self.latitude_var,
                                                                         slider_label=lat_label))
         latitude_slide.place(x=x_pos, y=50)
-        self.root.bind("<Return>", lambda x: self.slider_change(slider_var=self.day_var, slider_label=day_label))
+        self.root.bind("<Return>", lambda x: self.slider_change(slider_var=self.latitude_var, slider_label=lat_label))
 
     def plot_place(self):
         self.fig = Figure(figsize=(8, 7), )
@@ -84,13 +88,13 @@ class ClearDayGui:
 
     def caculation_static_labels(self):
         inso_label = Label(self.root, text="Bean Normal Insolation:")
-        inso_label.place(x=10, y=100)
-        self.inso_label = Label(self.root, text="{:.2f}".format(self.Inso_b_n * 1370) + "W/m^2")
-        self.inso_label.place(x=190, y=100)
+        inso_label.place(x=0, y=100)
+        self.inso_label = Label(self.root, text=str("{:.2f}".format(self.Inso_b_n * 1370) + "W/m^2"))
+        self.inso_label.place(x=170, y=100)
 
     def calculation_labels(self):
         try:
-            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370))
+            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370) +" W/m^2")
         except:
             pass
 
@@ -100,6 +104,16 @@ class ClearDayGui:
         self.varying_params()
         self.update_plot()
         self.calculation_labels()
+
+
+    def solar_time(self):
+        self.begin_time_var = IntVar()
+        begin = Entry(self.root, text_variable=self.begin_time_var)
+        begin.place(x=20, y=200)
+
+
+        self.end_time_var = IntVar()
+
 
     def varying_params(self):
         try:
