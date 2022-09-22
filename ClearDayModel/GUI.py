@@ -18,7 +18,7 @@ class ClearDayGui:
         self.Inso_b_n = 0
         self.plot_place()
         self.caculation_static_labels()
-        self.solar_time()
+        self.solar_time_func()
 
         self.root.mainloop()
 
@@ -65,6 +65,20 @@ class ClearDayGui:
                                    command=lambda x: self.slider_change(slider_var=self.latitude_var,
                                                                         slider_label=lat_label))
         latitude_slide.place(x=x_pos, y=50)
+
+        self.longiitude_var = DoubleVar()
+        longi = Label(self.root, text="lat from GMT: ").place(x=x_pos + label_spacing, y=72)
+        longi_label = Label(self.root, text=str("{:.2f}".format(self.altitude_var.get())))
+        # longi_label.place(x=x_pos + label_spacing + 100, y=50)
+        longi_entry = Entry(self.root, textvariable=self.longiitude_var, width=10)
+        longi_entry.place(x=x_pos + label_spacing + 100, y=73, )
+
+        longiitude_slide = ttk.Scale(self.root, from_=-90, to=90, variable=self.longiitude_var,
+                                   command=lambda x: self.slider_change(slider_var=self.longiitude_var,
+                                                                        slider_label=longi_label))
+        longiitude_slide.place(x=x_pos, y=70)
+        
+        
         self.root.bind("<Return>", lambda x: self.slider_change(slider_var=self.latitude_var, slider_label=lat_label))
 
     def plot_place(self):
@@ -94,7 +108,7 @@ class ClearDayGui:
 
     def calculation_labels(self):
         try:
-            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370) +" W/m^2")
+            self.inso_label.configure(text="{:.2f}".format(self.Inso_b_n * 1370) +" W-h/m^2")
         except:
             pass
 
@@ -106,13 +120,32 @@ class ClearDayGui:
         self.calculation_labels()
 
 
-    def solar_time(self):
+    def solar_time_func(self):
         self.begin_time_var = IntVar()
-        begin = Entry(self.root, text_variable=self.begin_time_var)
+        start = Label(self.root, text="Start (EST)")
+        start.place(x=20, y=180)
+        begin = Entry(self.root, textvariable=self.begin_time_var)
         begin.place(x=20, y=200)
 
-
         self.end_time_var = IntVar()
+        end = Label(self.root, text="End (EST)")
+        end.place(x=150, y=180)
+        finish = Entry(self.root, textvariable=self.end_time_var)
+        finish.place(x=150, y=200)
+
+        self.begin_time_gmt_var = IntVar()
+        start = Label(self.root, text="Start (GMT)")
+        start.place(x=20, y=230)
+        begin = Entry(self.root, textvariable=self.begin_time_gmt_var)
+        begin.place(x=20, y=250)
+
+        self.end_time_gmt_var = IntVar()
+        end = Label(self.root, text="End (GMT)")
+        end.place(x=150, y=230)
+        finish = Entry(self.root, textvariable=self.end_time_gmt_var)
+        finish.place(x=150, y=250)
+
+
 
 
     def varying_params(self):
@@ -151,9 +184,19 @@ class ClearDayGui:
             self.plot1.scatter(list(self.solar_time), list(self.cd_factor))
             self.fig.legend(['Spline for integration', 'Discrete Points'], loc='upper left')
             self.Inso_b_n = f.integral(0, 4)
+            self.plot1.set_ylim([0, .4])
+
             self.canvas.draw()
         except AttributeError:
             pass
+
+
+    def local_to_gmt(self):
+        self.mu = 0
+
+        local = self.begin_time_gmt_var + self.mu/15
+        pass
+
 
 
 ClearDayGui()
