@@ -1,5 +1,9 @@
 # 1D Heat Equation Discretization
 
-$\delta$
+We start with the general heat equation
 
-Inline: $\delta$
+$
+
+\begin{cente
+
+$
