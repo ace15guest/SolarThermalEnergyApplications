@@ -14,11 +14,21 @@ class ClearDayGui:
         self.root.resizable(False, False)
         self.slide_bars_place()
 
-        self.solar_time = np.arange(-12, 12.1, .5)
+        self.solar_time = np.arange(-7, 12.1, .5)
         self.Inso_b_n = 0
         self.plot_place()
         self.caculation_static_labels()
         self.solar_time_func()
+
+        self.day_var.set(263)
+        self.latitude_var.set(41.7)
+        self.altitude_var.set(.026)
+        self.longitude_var.set(72.72)
+        # self.day_var.set(263)
+        # self.latitude_var.set(36)
+        # self.altitude_var.set(.126)
+        # self.longitude_var.set(72.72)
+        self.update_plot()
 
         self.root.mainloop()
 
@@ -67,17 +77,29 @@ class ClearDayGui:
                                                                         slider_label=lat_label))
         latitude_slide.place(x=x_pos, y=50)
 
-        self.longiitude_var = DoubleVar()
-        longi = Label(self.root, text="lat from GMT: ").place(x=x_pos + label_spacing, y=72)
+        self.longitude_var = DoubleVar()
+        longi = Label(self.root, text="lat from GMT: ").place(x=x_pos + label_spacing, y=70)
         longi_label = Label(self.root, text=str("{:.2f}".format(self.altitude_var.get())))
         # longi_label.place(x=x_pos + label_spacing + 100, y=50)
-        longi_entry = Entry(self.root, textvariable=self.longiitude_var, width=10)
+        longi_entry = Entry(self.root, textvariable=self.longitude_var, width=10)
         longi_entry.place(x=x_pos + label_spacing + 100, y=73, )
 
-        longiitude_slide = ttk.Scale(self.root, from_=-180, to=180, variable=self.longiitude_var,
-                                     command=lambda x: self.slider_change(slider_var=self.longiitude_var,
-                                                                          slider_label=longi_label))
-        longiitude_slide.place(x=x_pos, y=70)
+        longitude_slide = ttk.Scale(self.root, from_=69, to=85, variable=self.longitude_var,
+                                    command=lambda x: self.slider_change(slider_var=self.longitude_var,
+                                                                         slider_label=longi_label))
+        longitude_slide.place(x=x_pos, y=70)
+
+        self.day_hr_var = DoubleVar()
+        longi = Label(self.root, text="Day Hr: ").place(x=x_pos + label_spacing, y=100)
+        day_hr_label = Label(self.root, text=str("{:.2f}".format(self.altitude_var.get())))
+        # longi_label.place(x=x_pos + label_spacing + 100, y=50)
+        day_entry = Entry(self.root, textvariable=self.day_hr_var, width=10)
+        day_entry.place(x=x_pos + label_spacing + 100, y=100, )
+
+        day_hr_slide = ttk.Scale(self.root, from_=0, to=24, variable=self.day_hr_var,
+                                    command=lambda x: self.slider_change(slider_var=self.day_hr_var,
+                                                                         slider_label=day_hr_label))
+        day_hr_slide.place(x=x_pos, y=100)
 
         self.root.bind("<Return>", lambda x: self.slider_change(slider_var=self.latitude_var, slider_label=lat_label))
 
@@ -86,7 +108,7 @@ class ClearDayGui:
         self.plot1 = self.fig.add_subplot(111)
         self.fig.suptitle('Clear Day Insolation Factor')
         self.fig.supxlabel('Solar Hour (GMT)')
-        self.fig.supylabel('Insolation Factor')
+        self.fig.supylabel('Insolation W/m^2')
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         self.canvas.draw()
         # placing the self.canvas on the Tkinter window
@@ -101,10 +123,10 @@ class ClearDayGui:
         self.canvas.get_tk_widget().place(x=400, y=10)
 
     def caculation_static_labels(self):
-        inso_label = Label(self.root, text="Bean Normal Insolation:")
-        inso_label.place(x=0, y=100)
+        inso_label = Label(self.root, text="Beam (24h) Normal Insolation:")
+        inso_label.place(x=0, y=150)
         self.inso_label = Label(self.root, text=str("{:.2f}".format(self.Inso_b_n * 1370) + "W/m^2"))
-        self.inso_label.place(x=170, y=100)
+        self.inso_label.place(x=170, y=150)
 
     def calculation_labels(self):
         try:
@@ -121,34 +143,34 @@ class ClearDayGui:
         self.local_to_gmt()
     def solar_time_func(self):
         self.begin_time_var = IntVar()
-        start = Label(self.root, text="Start (EST)")
+        start = Label(self.root, text="(EST)")
         start.place(x=20, y=180)
         begin = Entry(self.root, textvariable=self.begin_time_var)
         begin.place(x=20, y=200)
 
         self.end_time_var = IntVar()
-        end = Label(self.root, text="End (EST)")
+        end = Label(self.root, text="(Solar)")
         end.place(x=150, y=180)
         finish = Entry(self.root, textvariable=self.end_time_var)
         finish.place(x=150, y=200)
 
-        self.begin_time_gmt_var = IntVar()
-        start = Label(self.root, text="Start (GMT)")
-        start.place(x=20, y=230)
-        begin = Entry(self.root, textvariable=self.begin_time_gmt_var)
-        begin.place(x=20, y=250)
-
-        self.end_time_gmt_var = IntVar()
-        end = Label(self.root, text="End (GMT)")
-        end.place(x=150, y=230)
-        finish = Entry(self.root, textvariable=self.end_time_gmt_var)
-        finish.place(x=150, y=250)
+        # self.begin_time_gmt_var = IntVar()
+        # start = Label(self.root, text="Start (GMT)")
+        # start.place(x=20, y=230)
+        # begin = Entry(self.root, textvariable=self.begin_time_gmt_var)
+        # begin.place(x=20, y=250)
+        # self.begin_time_gmt_var.set(12)
+        #
+        # self.end_time_gmt_var = IntVar()
+        # end = Label(self.root, text="End (GMT)")
+        # end.place(x=150, y=230)
+        # finish = Entry(self.root, textvariable=self.end_time_gmt_var)
+        # finish.place(x=150, y=250)
 
     def varying_params(self):
         try:
             self.omega = self.solar_time * .2618
-            self.sin_alpha = self.sin_delta * math.sin(self.phi) + math.cos(math.asin(self.sin_delta)) * np.cos(
-                self.omega) * math.cos(self.phi)
+            self.sin_alpha = self.sin_delta * math.sin(self.phi) + np.cos(self.omega) * math.cos(self.phi)
             self.k_sin_alpha = -self.K / self.sin_alpha
             self.raw_cd_factor = self.A0 + self.A1 * np.exp(self.k_sin_alpha)
             self.cd_factor = []
@@ -164,40 +186,59 @@ class ClearDayGui:
     def calculation_constants(self):
         self.day_angle = (self.day_var.get() - 173) * 0.017453
         self.declination_angle = math.asin(.39795 * math.cos(self.day_angle)) * 57.2957
-        self.phi = self.latitude_var.get() / 87.2957
+        self.phi = self.latitude_var.get() / 57.2957
         self.sin_delta = .39795 * math.cos(self.day_angle)
         self.A0 = .4237 - .00821 * (6 - self.altitude_var.get()) ** 2
-        self.A1 = .5055 - .00595 * (6 - self.altitude_var.get()) ** 2
-        self.K = .2711 + .1858 * (2.5 - self.altitude_var.get()) ** 2
+        self.A1 = .5055 + .00595 * (6.5 - self.altitude_var.get())* (6.5 - self.altitude_var.get())
+        self.K = .2711 + .01858 * (2.5 - self.altitude_var.get()) ** 2
 
     def update_plot(self):
         try:
             self.plot1.clear()
             f = InterpolatedUnivariateSpline(list(self.solar_time), list(self.cd_factor), k=1)
-            xs = np.linspace(-12, 12, 500)
-            self.plot1.plot(xs, f(xs))
+            f2 = InterpolatedUnivariateSpline(list(self.solar_time), list(self.cd_factor*1370), k=1)
 
-            self.plot1.scatter(list(self.solar_time), list(self.cd_factor))
+            xs = np.linspace(-12, 12, 500)
+            self.plot1.plot(xs, f2(xs))
+
+            self.plot1.scatter(list(self.solar_time), list(self.cd_factor*1370))
             self.fig.legend(['Spline for integration', 'Discrete Points'], loc='upper left')
-            self.Inso_b_n = f.integral(0, 4)
-            self.plot1.set_ylim([0, .4])
+            self.Inso_b_n = f.integral(-12, 12)
+            # self.plot1.set_ylim([0, .4])
 
             self.canvas.draw()
         except AttributeError:
             pass
 
     def local_to_gmt(self):
-        self.mu = self.longiitude_var.get()
-        local = 12+self.begin_time_gmt_var.get() + self.mu / 15
+        self.mu = self.longitude_var.get()
+        local = self.day_hr_var.get()
         local_hr = math.floor(local)
         local_min = round((local % 1) * 60, 2)
-        self.begin_time_var.set(str(local_hr) + ':' + str(int(local_min)))
+        if int(local_min) <10:
+            self.begin_time_var.set(str(local_hr) + ':0' + str(int(local_min)))
+        else:
+            self.begin_time_var.set(str(local_hr) + ':' + str(int(local_min)))
 
-        self.mu = self.longiitude_var.get()
-        local = 12+self.end_time_gmt_var.get() + self.mu / 15
-        local_hr = math.floor(local)
+        self.mu = self.longitude_var.get()
+        local = self.day_hr_var.get()-.2
+        if local > 0:
+            local_hr = math.floor(local)
+        else:
+            local_hr = 0
         local_min = round((local % 1) * 60, 2)
-        self.end_time_var.set(str(local_hr) + ':' + str(int(local_min)))
+        print(self.mu)
+        if local_hr > 24:
+
+            local_hr = local_hr-24
+        if int(local_min) <10:
+            self.end_time_var.set(str(local_hr) + ':0' + str(int(local_min)))
+        else:
+            self.end_time_var.set(str(local_hr) + ':' + str(int(local_min)))
+
+
+
+
 
         pass
 
